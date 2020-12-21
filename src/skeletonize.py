@@ -15,7 +15,7 @@ def skeletonize(img: np.ndarray, verbose=False) -> np.ndarray:
     if verbose:
         visualize_skeleton(img, skeleton, skeleton_raw)
 
-    return skeleton
+    return skeleton_raw, skeleton
 
 
 def get_best_skeleton(img):
@@ -41,7 +41,8 @@ def remove_branch(skeleton: np.ndarray, branchpoints: np.ndarray, endpoint: Tupl
     endpoint_img[endpoint[0], endpoint[1]] = 1
     dist = nd.distance_transform_edt(endpoint_img == 0)
     dist_to_closest_branchpoint = np.min(dist[branchpoints == 255])
-    skeleton[dist < dist_to_closest_branchpoint] = 0
+    if (dist_to_closest_branchpoint < 100):
+        skeleton[dist < dist_to_closest_branchpoint] = 0
 
 
 def find_branch_end_points(skeleton: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
