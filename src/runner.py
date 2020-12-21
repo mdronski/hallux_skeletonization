@@ -10,14 +10,14 @@ def run():
         run_for_single(img)
 
 
-def run_for_single(img: np.ndarray):
+def run_for_single(img: np.ndarray, write_path=None):
     skeleton_raw, skeleton_processed = skeletonize(img)
     _, _, _, _, line_data = find_lines(skeleton_processed)
 
-    visualize_all(img, skeleton_raw, skeleton_processed, line_data)
+    visualize_all(img, skeleton_raw, skeleton_processed, line_data, write_path)
 
 
-def visualize_all(img, skeleton_raw, skeleton_processed, line_data):
+def visualize_all(img, skeleton_raw, skeleton_processed, line_data, write_path):
     fig, axes = plt.subplots(nrows=1,
                              ncols=4,
                              figsize=(20, 10),
@@ -32,11 +32,11 @@ def visualize_all(img, skeleton_raw, skeleton_processed, line_data):
 
     ax[1].imshow(skeleton_raw)
     ax[1].axis('off')
-    ax[1].set_title('skeleton_raw', fontsize=15)
+    ax[1].set_title('skeleton original', fontsize=15)
 
     ax[2].imshow(skeleton_processed)
     ax[2].axis('off')
-    ax[2].set_title('skeleton_processed', fontsize=15)
+    ax[2].set_title('skeleton pruned', fontsize=15)
 
     ax[3].axis('off')
     (_pts, intersection_point, angle) = line_data
@@ -48,7 +48,10 @@ def visualize_all(img, skeleton_raw, skeleton_processed, line_data):
     ann = ax[3].annotate(str(angle), (intersection_point[0], intersection_point[1]), color='white')
     ann.set_fontsize(15)
     ax[3].scatter(intersection_point[0], intersection_point[1], c="y", marker="o")
-    ax[3].set_title('found lines', fontsize=15)
+    ax[3].set_title('angle', fontsize=15)
     ax[3].imshow(skeleton_processed)
 
-    plt.show()
+    if write_path is not None:
+        plt.savefig(write_path)
+    else:
+        plt.show()
